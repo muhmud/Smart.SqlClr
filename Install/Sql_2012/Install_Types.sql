@@ -25,6 +25,7 @@ create aggregate types.DictionaryCreatorZ(@key sql_variant, @value sql_variant) 
 -- Sorted Dictionary
 create aggregate types.SortedDictionaryCreator(@key sql_variant, @value sql_variant) returns types.Dictionary external name [Smart.SqlClr.Types].[Smart.SqlClr.Aggregates.SortedDictionaryCreator];
 create aggregate types.SortedDictionaryCreatorZ(@key sql_variant, @value sql_variant) returns types.Dictionary external name [Smart.SqlClr.Types].[Smart.SqlClr.Aggregates.SortedDictionaryCreatorZ];
+GO
 
 -- Enumerator
 create type types.Enumerator external name [Smart.SqlClr.Types].[Smart.SqlClr.Types.Enumerator];
@@ -40,3 +41,4 @@ GO
 -- Variant
 create type types.Variant external name [Smart.SqlClr.Types].[Smart.SqlClr.Types.Variant];
 GO
+

@@ -170,6 +170,7 @@ namespace Smart { namespace SqlClr { namespace Internal {
 		types->Add(SqlTypes::SqlBinary::typeid, "binary");
 		types->Add(SqlTypes::SqlBoolean::typeid, "bit");
 		types->Add(SqlTypes::SqlString::typeid, "string");
+		types->Add(System::String::typeid, "string");
 		types->Add(DateTime::typeid, "datetime2");
 		types->Add(SqlTypes::SqlDateTime::typeid, "datetime");
 		types->Add(DateTimeOffset::typeid, "datetimeoffset");
@@ -490,9 +491,7 @@ namespace Smart { namespace SqlClr { namespace Internal {
 			typeString = m_sqlType;
 		} else {
 			type = instance->GetType();
-			if (type != System::String::typeid) {
-				typeString = SqlTypeStringIndex[type];
-			}
+			typeString = SqlTypeStringIndex[type];
 		}
 
 		Object^ value = GetValue(instance);

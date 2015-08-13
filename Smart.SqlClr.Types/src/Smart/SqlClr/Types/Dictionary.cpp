@@ -617,6 +617,32 @@ namespace Smart { namespace SqlClr { namespace Types {
 		return nullptr;
 	}
 
+	String^ Dictionary::ToSimpleString() {
+		if (!IsNull) {
+			Text::StringBuilder^ builder = gcnew Text::StringBuilder("{ ");
+			bool start = true;
+
+			for each(SqlDictionaryEntry entry in m_sqlDictionary) {
+				builder->Append(!start ? ", " : String::Empty);
+				builder->Append(m_keyType->ConvertToString(entry.Key));
+				builder->Append(" -> ");
+
+				if (!IsNested.Value) {
+					builder->Append(m_valueType->ConvertToString(entry.Value));
+				} else {
+					builder->Append(entry.Value->ToString());
+				}
+
+				start = false;
+			}
+
+			builder->Append(" }");
+			return builder->ToString();
+		}
+
+		return nullptr;
+	}
+
 	Dictionary^ Dictionary::Parse(SqlString sqlValue) {
 		String^ value = sqlValue.Value;
 		Xml::XmlReader^ reader = Xml::XmlReader::Create(gcnew IO::StringReader(value));

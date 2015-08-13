@@ -437,9 +437,18 @@ namespace Types {
 		static property Dictionary^ Null {
 			Dictionary^ get();
 		}
-		
+
 		/// Converts the current instance to a string representation; necessary for SqlClr types
 		virtual String^ ToString() override;
+
+		/**
+		* Outputs the contents of the list as a simple string
+		*
+		* @returns An easy to read string
+		*
+		*/
+		[SqlMethod(IsDeterministic = true, DataAccess = DataAccessKind::None)]
+		String^ ToSimpleString();
 
 		/**
 		 * Parses a string value to create an instance of the type
