@@ -68,7 +68,8 @@ select @list.ToSimpleString(), -- String representation of the list
 	   @list.ContainsValue(3.4), -- 1 (True)
 	   @list.Get(0), -- 3.4,
 	   @list.IndexOf(5.6), -- 2
-	   @list.IndexOf(9.9); -- -1
+	   @list.IndexOf(9.9), -- -1
+	   @list.Count; -- Count of items in the list
 
 -- Add a list to another list
 declare @list2 types.List = types.List::NewOf('decimal');
