@@ -70,6 +70,12 @@ select @list.ToSimpleString(), -- String representation of the list
 	   @list.IndexOf(5.6), -- 2
 	   @list.IndexOf(9.9); -- -1
 
+-- Add a list to another list
+declare @list2 types.List = types.List::NewOf('decimal');
+set @list2.AddItem(10.10);
+set @list2.AddItem(2.11);
+set @list.AddFromList(@list2);
+
 set @list.Sort(); -- Sort the list
 select @list.ToSimpleString();
 ```
