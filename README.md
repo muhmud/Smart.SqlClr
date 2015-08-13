@@ -104,3 +104,14 @@ set @map.AddEntry(1, 'hello');
 set @map.AddEntry(2, 'world');
 select @map.ToSimpleString();
 ```
+
+#### Dictionary of Data
+```
+select types.DictionaryCreator(k, v).ToSimpleString()
+from (
+	values (1, 2), (3, 4), (5, 6)
+) t (k, v);
+```
+
+
+```
