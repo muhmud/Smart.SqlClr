@@ -32,10 +32,10 @@ set @list.AddItem(3);
 select @list.ToSimpleString();
 ```
 
-#### ListCreator aggregate function
+#### List of Data
 ```
 -- Type of the List is inferred from the elements
-select types.ListCreator(a).ToString()
+select types.ListCreator(a).ToSimpleString()
 from (
 	values (1), (2), (3)
 ) t(a);
