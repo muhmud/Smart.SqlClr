@@ -79,14 +79,28 @@ set @list.AddFromList(@list2);
 
 set @list.Sort(); -- Sort the list
 select @list.ToSimpleString();
+
+-- Null handling
+declare @list types.List = types.List::NewOf('string')
+set @list.AddItem(null);
+set @list.AddItem('abc');
+select @list.ToSimpleString()
 ```
 
 ### Dictionary
+
+#### Default Dictionary (string -> sql_variant)
+```
+declare @map types.Dictionary = types.Dictionary::New();
+set @map.AddEntry('hello', 'world');
+set @map.AddEntry('world', 2);
+select @map.ToSimpleString();
+```
 
 #### Typed Dictionary
 ```
 declare @map types.Dictionary = types.Dictionary::NewOf('int', 'varchar');
 set @map.AddEntry(1, 'hello');
 set @map.AddEntry(2, 'world');
-select @map.ToString();
+select @map.ToSimpleString();
 ```
