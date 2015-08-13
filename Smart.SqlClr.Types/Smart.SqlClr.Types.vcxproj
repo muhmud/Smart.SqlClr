@@ -1,0 +1,147 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{291B0B40-6AFA-495C-A402-4A2DCC27B9B7}</ProjectGuid>
+    <RootNamespace>SmartSqlClrTypes</RootNamespace>
+    <Keyword>ManagedCProj</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+    <CLRSupport>Safe</CLRSupport>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+    <CLRSupport>Safe</CLRSupport>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>12.0.30501.0</_ProjectFileVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>$(SolutionDir)bin\$(Configuration)\</OutDir>
+    <IntDir>build\$(Configuration)\</IntDir>
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>$(SolutionDir)bin\$(Configuration)\</OutDir>
+    <IntDir>build\$(Configuration)\</IntDir>
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalUsingDirectories>$(SolutionDir)bin\$(Configuration);C:\Program Files (x86)\Microsoft SQL Server\110\SDK\Assemblies;%(AdditionalUsingDirectories)</AdditionalUsingDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies />
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AssemblyDebug>true</AssemblyDebug>
+      <TargetMachine>MachineX86</TargetMachine>
+      <AdditionalLibraryDirectories>
+      </AdditionalLibraryDirectories>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalUsingDirectories>$(SolutionDir)bin\$(Configuration);C:\Program Files (x86)\Microsoft SQL Server\110\SDK\Assemblies;%(AdditionalUsingDirectories)</AdditionalUsingDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies />
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="src\Assembly.cpp" />
+    <ClCompile Include="src\Smart\SqlClr\Aggregates\DictionaryCreator.cpp" />
+    <ClCompile Include="src\Smart\SqlClr\Aggregates\DictionaryCreatorZ.cpp" />
+    <ClCompile Include="src\Smart\SqlClr\Aggregates\Internal\DictionaryCreatorImpl.cpp" />
+    <ClCompile Include="src\Smart\SqlClr\Aggregates\Internal\ListCreatorImpl.cpp" />
+    <ClCompile Include="src\Smart\SqlClr\Aggregates\ListCreator.cpp" />
+    <ClCompile Include="src\Smart\SqlClr\Aggregates\ListCreatorZ.cpp" />
+    <ClCompile Include="src\Smart\SqlClr\Aggregates\SortedDictionaryCreator.cpp" />
+    <ClCompile Include="src\Smart\SqlClr\Aggregates\SortedDictionaryCreatorZ.cpp" />
+    <ClCompile Include="src\Smart\SqlClr\Aggregates\SortedListCreator.cpp" />
+    <ClCompile Include="src\Smart\SqlClr\Aggregates\SortedListCreatorZ.cpp" />
+    <ClCompile Include="src\Smart\SqlClr\Internal\SqlObject.cpp" />
+    <ClCompile Include="src\Smart\SqlClr\Types\Dictionary.cpp" />
+    <ClCompile Include="src\Smart\SqlClr\Types\Enumerator.cpp" />
+    <ClCompile Include="src\Smart\SqlClr\Types\Graph.cpp" />
+    <ClCompile Include="src\Smart\SqlClr\Types\GraphNode.cpp" />
+    <ClCompile Include="src\Smart\SqlClr\Types\List.cpp" />
+    <ClCompile Include="src\Smart\SqlClr\Types\Tuple.cpp" />
+    <ClCompile Include="src\Smart\SqlClr\Types\TupleSet.cpp" />
+    <ClCompile Include="src\Smart\SqlClr\Types\Variant.cpp" />
+    <ClCompile Include="src\Smart\SqlClr\Utils\CollectionAlgorithm.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\Smart\SqlClr\Aggregates\DictionaryCreator.hpp" />
+    <ClInclude Include="src\Smart\SqlClr\Aggregates\DictionaryCreatorZ.hpp" />
+    <ClInclude Include="src\Smart\SqlClr\Aggregates\Internal\DictionaryCreatorImpl.hpp" />
+    <ClInclude Include="src\Smart\SqlClr\Aggregates\Internal\ListCreatorImpl.hpp" />
+    <ClInclude Include="src\Smart\SqlClr\Aggregates\ListCreator.hpp" />
+    <ClInclude Include="src\Smart\SqlClr\Aggregates\ListCreatorZ.hpp" />
+    <ClInclude Include="src\Smart\SqlClr\Aggregates\SortedDictionaryCreator.hpp" />
+    <ClInclude Include="src\Smart\SqlClr\Aggregates\SortedDictionaryCreatorZ.hpp" />
+    <ClInclude Include="src\Smart\SqlClr\Aggregates\SortedListCreator.hpp" />
+    <ClInclude Include="src\Smart\SqlClr\Aggregates\SortedListCreatorZ.hpp" />
+    <ClInclude Include="src\Smart\SqlClr\Internal\Interfaces\ISqlObject.hpp" />
+    <ClInclude Include="src\Smart\SqlClr\Internal\SqlObject.hpp" />
+    <ClInclude Include="src\Smart\SqlClr\Types\Dictionary.hpp" />
+    <ClInclude Include="src\Smart\SqlClr\Types\Enumerator.hpp" />
+    <ClInclude Include="src\Smart\SqlClr\Types\Graph.hpp" />
+    <ClInclude Include="src\Smart\SqlClr\Types\GraphNode.hpp" />
+    <ClInclude Include="src\Smart\SqlClr\Types\List.hpp" />
+    <ClInclude Include="src\Smart\SqlClr\Types\Tuple.hpp" />
+    <ClInclude Include="src\Smart\SqlClr\Types\TupleSet.hpp" />
+    <ClInclude Include="src\Smart\SqlClr\Types\Variant.hpp" />
+    <ClInclude Include="src\Smart\SqlClr\Utils\CollectionAlgorithm.hpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Smart.SqlClr\Smart.SqlClr.vcxproj">
+      <Project>{f568de24-dbcc-4782-a142-c6bfbf745291}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
