@@ -79,3 +79,13 @@ set @list.AddFromList(@list2);
 set @list.Sort(); -- Sort the list
 select @list.ToSimpleString();
 ```
+
+### Dictionary
+
+#### Typed Dictionary
+```
+declare @map types.Dictionary = types.Dictionary::NewOf('int', 'varchar');
+set @map.AddEntry(1, 'hello');
+set @map.AddEntry(2, 'world');
+select @map.ToString();
+```
