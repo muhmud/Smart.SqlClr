@@ -113,5 +113,8 @@ from (
 ) t (k, v);
 ```
 
-
+#### Compressed Dictionary
+```
+select types.DictionaryCreatorZ(object_id, name)
+from sys.objects;
 ```
