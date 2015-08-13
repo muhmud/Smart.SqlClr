@@ -118,3 +118,8 @@ from (
 select types.DictionaryCreatorZ(object_id, name)
 from sys.objects;
 ```
+
+#### Nested Dictionary
+```
+
+```
