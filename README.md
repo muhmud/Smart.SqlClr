@@ -179,3 +179,19 @@ select @map.Keys.ToSimpleString(), -- The Keys in the Dictionary
 	   @map.IsSorted, -- Whether or not the Dictionary is sorted
 	   @map.IsNested -- Whether or not the Dictionary is nested
 ```
+
+### Enumerator
+
+#### Iterate over list
+```
+declare @list types.List = types.List::NewOf('uniqueidentifier');
+set @list.AddItem(newid());
+set @list.AddItem(newid());
+set @list.AddItem(newid());
+declare @enumerator types.Enumerator = @list.Items;
+while (@enumerator.HasNext = 1)
+begin
+	select @enumerator.CurrentItem;
+	set @enumerator.MoveNext();
+end
+```
