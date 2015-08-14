@@ -127,3 +127,20 @@ set @nestedMap.AddEntry('world', 2);
 set @map.AddNestedEntry('hello', @nestedMap);
 select @map.ToSimpleString()
 ```
+
+#### Sorted Dictionary
+```
+declare @map types.Dictionary = types.Dictionary::NewSortedOf('int', 'string');
+set @map.AddEntry(1, 'hello');
+set @map.AddEntry(10, '!');
+set @map.AddEntry(2, 'world');
+select @map.ToSimpleString();
+
+-- Nested & Sorted
+declare @map types.Dictionary = types.Dictionary::NewSortedAndNestedOf('string');
+declare @nestedMap types.Dictionary = types.Dictionary::NewOf('int', 'datetime');
+set @nestedMap.AddEntry(3, getdate());
+set @map.AddNestedEntry('world', @nestedMap);
+set @map.AddNestedEntry('hello', @nestedMap);
+select @map.ToSimpleString()
+```
