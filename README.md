@@ -118,3 +118,12 @@ from (
 select types.DictionaryCreatorZ(object_id, name)
 from sys.objects;
 ```
+
+#### Nested Dictionary
+```
+declare @map types.Dictionary = types.Dictionary::NewNestedOf('string');
+declare @nestedMap types.Dictionary = types.Dictionary::NewOf('string', 'int');
+set @nestedMap.AddEntry('world', 2);
+set @map.AddNestedEntry('hello', @nestedMap);
+select @map.ToSimpleString()
+```
