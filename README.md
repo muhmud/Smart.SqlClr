@@ -182,7 +182,7 @@ select @map.Keys.ToSimpleString(), -- The Keys in the Dictionary
 
 ### Enumerator
 
-#### Iterate over list
+#### Iterate over List
 ```
 declare @list types.List = types.List::NewOf('uniqueidentifier');
 set @list.AddItem(newid());
