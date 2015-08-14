@@ -195,3 +195,17 @@ begin
 	set @enumerator.MoveNext();
 end
 ```
+
+#### Iterate over Dictionary
+```
+declare @map types.Dictionary = types.Dictionary::NewOf('string', 'float');
+set @map.AddEntry('abc', cast(5.4 as float));
+set @map.AddEntry('def', cast(3.4 as float));
+set @map.AddEntry('ghi', cast(7.6 as float));
+declare @enumerator types.Enumerator = @map.Keys; -- @map.Values is allow Enumerable
+while (@enumerator.HasNext = 1)
+begin
+	select @enumerator.CurrentItem, @map.Get(@enumerator.CurrentItem);
+	set @enumerator.MoveNext();
+end
+```
