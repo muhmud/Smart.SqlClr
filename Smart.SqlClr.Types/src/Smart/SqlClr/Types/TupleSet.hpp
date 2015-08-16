@@ -73,6 +73,7 @@ namespace Types {
 		typedef Collections::Generic::KeyValuePair<String^, SqlTupleIndex^> SqlTupleIndexesEntry;
 
 		// Internal Implementation
+		Tuple::SqlTupleNames^ m_names;
 		Tuple::SqlTupleItems^ m_items;
 		Tuple::SqlTupleTypes^ m_types;
 		SqlTuples^ m_tuples;

@@ -49,7 +49,7 @@ namespace Smart { namespace SqlClr { namespace Types {
 		return o;
 	}
 
-	Object^ List::checkTypes(Object^ value) {
+	void List::checkTypes(Object^ value) {
 		if (!m_valueType && value) {
 			throw gcnew SmartSqlClrException(String::Format("Invalid value '{0}'. Values must be of Variant type", value));
 		}
@@ -57,12 +57,6 @@ namespace Smart { namespace SqlClr { namespace Types {
 		if (m_valueType && !m_valueType->IsValueValid(value)) {
 			throw gcnew SmartSqlClrException(String::Format("Invalid value '{0}'. Values must be '{1}'", value, m_valueType->SqlType));
 		}
-
-		if (value->GetType() == System::Data::SqlTypes::SqlString::typeid) {
-			return value->ToString();
-		}
-
-		return value;
 	}
 
 	void List::checkTypes(List^ list) {
@@ -182,7 +176,8 @@ namespace Smart { namespace SqlClr { namespace Types {
 
 	void List::AddItem(Object^ value) {
 		if (!IsNull) {
-			value = checkTypes(value);
+			checkTypes(value);
+			value = Internal::SqlObject::Clean(value);
 			
 			m_sqlList->Add(value);
 			m_isSorted = 0;
@@ -201,6 +196,7 @@ namespace Smart { namespace SqlClr { namespace Types {
 	void List::AddIfNotExists(Object^ value) {
 		if (!IsNull) {
 			checkTypes(value);
+			value = Internal::SqlObject::Clean(value);
 
 			if (!m_sqlList->Contains(value)) {
 				m_sqlList->Add(value);
@@ -212,6 +208,7 @@ namespace Smart { namespace SqlClr { namespace Types {
 	void List::InsertAt(int index, Object^ value) {
 		if (!IsNull) {
 			checkTypes(value);
+			value = Internal::SqlObject::Clean(value);
 
 			m_sqlList->Insert(index, value);
 			m_isSorted = 0;
@@ -229,7 +226,8 @@ namespace Smart { namespace SqlClr { namespace Types {
 
 	void List::Remove(Object^ value) {
 		if (!IsNull) {
-			value = checkTypes(value);
+			checkTypes(value);
+			value = Internal::SqlObject::Clean(value);
 
 			if (!m_sqlList->Contains(value)) {
 				throw gcnew SmartSqlClrException(String::Format("List does not contain an item for '{0}'", value));
@@ -242,7 +240,8 @@ namespace Smart { namespace SqlClr { namespace Types {
 
 	void List::RemoveIfExists(Object^ value) {
 		if (!IsNull) {
-			value = checkTypes(value);
+			checkTypes(value);
+			value = Internal::SqlObject::Clean(value);
 
 			if (m_sqlList->Contains(value)) {
 				m_sqlList->Remove(value);
@@ -253,7 +252,8 @@ namespace Smart { namespace SqlClr { namespace Types {
 
 	void List::RemoveAll(Object^ value) {
 		if (!IsNull) {
-			value = checkTypes(value);
+			checkTypes(value);
+			value = Internal::SqlObject::Clean(value);
 
 			while (m_sqlList->Contains(value)) {
 				m_sqlList->Remove(value);
@@ -275,7 +275,8 @@ namespace Smart { namespace SqlClr { namespace Types {
 
 	SqlInt32 List::IndexOf(Object^ value) {
 		if (!IsNull) {
-			value = checkTypes(value);
+			checkTypes(value);
+			value = Internal::SqlObject::Clean(value);
 
 			return m_sqlList->IndexOf(value);
 		}
@@ -285,7 +286,8 @@ namespace Smart { namespace SqlClr { namespace Types {
 
 	SqlBoolean List::ContainsValue(Object^ value) {
 		if (!IsNull) {
-			value = checkTypes(value);
+			checkTypes(value);
+			value = Internal::SqlObject::Clean(value);
 
 			return m_sqlList->Contains(value);
 		}

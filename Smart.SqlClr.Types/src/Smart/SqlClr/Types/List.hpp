@@ -64,7 +64,7 @@ namespace Types {
 		static List^ create(Type^ sqlDataType);
 
 		// Checks whether supplied values match types
-		Object^ checkTypes(Object^ value);
+		void checkTypes(Object^ value);
 		void checkTypes(List^ list);
 		bool checkTypes(List^ list, bool noThrow);
 		void checkVariantTypes();

@@ -243,6 +243,11 @@ namespace Smart { namespace SqlClr { namespace Internal {
 		 *
 		 */
 		static SqlObject^ Create(Type^ sqlDataType);
+
+		/**
+		 * Cleans up a type used in comparisons
+		 */
+		static Object^ Clean(Object^ value);
 	};
 }}}
 

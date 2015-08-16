@@ -10,22 +10,23 @@ namespace Smart { namespace SqlClr { namespace Types {
 	using namespace System::Data::SqlTypes;
 	using namespace Microsoft::SqlServer::Server;
 
-	Tuple^ Tuple::Create(SqlTupleItems^ items, SqlTupleTypes^ types, IO::BinaryReader^ reader) {
-		Tuple^ tuple = Create(items, types);
+	Tuple^ Tuple::Create(SqlTupleNames^ names, SqlTupleItems^ items, SqlTupleTypes^ types, IO::BinaryReader^ reader) {
+		Tuple^ tuple = Create(names, items, types);
 		tuple->readBody(reader, SqlInt32::Null);
 
 		return tuple;
 	}
 	
-	Tuple^ Tuple::Create(SqlTupleItems^ items, SqlTupleTypes^ types, Xml::XmlReader^ reader) {
-		Tuple^ tuple = Create(items, types);
+	Tuple^ Tuple::Create(SqlTupleNames^ names, SqlTupleItems^ items, SqlTupleTypes^ types, Xml::XmlReader^ reader) {
+		Tuple^ tuple = Create(names, items, types);
 		tuple->ReadXml(reader, false);
 
 		return tuple;
 	}
 
-	Tuple^ Tuple::Create(SqlTupleItems^ items, SqlTupleTypes^ types) {
+	Tuple^ Tuple::Create(SqlTupleNames^ names, SqlTupleItems^ items, SqlTupleTypes^ types) {
 		Tuple^ tuple = gcnew Tuple;
+		tuple->m_names = names;
 		tuple->m_items = items;
 		tuple->m_types = types;
 
@@ -34,6 +35,7 @@ namespace Smart { namespace SqlClr { namespace Types {
 
 	Tuple^ Tuple::Create() {
 		Tuple^ tuple = gcnew Tuple;
+		tuple->m_names = gcnew SqlTupleNamesImpl;
 		tuple->m_items = gcnew SqlTupleItemsImpl;
 		tuple->m_types = gcnew SqlTupleTypesImpl;
 		tuple->m_values = gcnew SqlTupleValuesImpl;
@@ -45,6 +47,7 @@ namespace Smart { namespace SqlClr { namespace Types {
 		Tuple^ tuple = gcnew Tuple;
 		tuple->m_isNull = m_isNull;
 		if (!m_isNull) {
+			tuple->m_names = m_names;
 			tuple->m_items = m_items;
 			tuple->m_types = m_types;
 			
@@ -58,12 +61,14 @@ namespace Smart { namespace SqlClr { namespace Types {
 
 	void Tuple::ReadXml(Xml::XmlReader^ reader, bool includeMetadata) {
 		reader->ReadStartElement(XML_ROOT_ELEMENT);
+		reader->MoveToContent();
 		int counter = 0;
 		do {
 			Internal::SqlObject^ type = nullptr;
 			if (!includeMetadata) {
 				type = m_types[counter++];
 			} else {
+				m_names->Add(reader->Name);
 				m_items->Add(reader->Name, counter++);
 
 				String^ typeString = reader->GetAttribute(XML_TYPE_ATTRIBUTE);
@@ -89,18 +94,19 @@ namespace Smart { namespace SqlClr { namespace Types {
 	void Tuple::WriteXml(Xml::XmlWriter^ writer, bool includeMetadata) {
 		writer->WriteStartElement(XML_ROOT_ELEMENT);
 
-		for each(SqlTupleItemEntry item in m_items) {
-			writer->WriteStartElement(item.Key);
+		for (int i = 0; i < m_names->Count; ++i) {
+			String^ item = m_names[i];
+			writer->WriteStartElement(item);
 
-			Internal::SqlObject^ type = m_types[item.Value];
+			Internal::SqlObject^ type = m_types[i];
 			if (includeMetadata) {
 				writer->WriteAttributeString(XML_TYPE_ATTRIBUTE, type->SqlType);
 			}
 
-			if (isNull(item.Value)) {
+			if (isNull(i)) {
 				writer->WriteAttributeString(XML_ISNULL_ATTRIBUTE, "true");
 			} else {
-				writer->WriteString(type->ConvertToString(m_values[item.Value]));
+				writer->WriteString(type->ConvertToString(m_values[i]));
 			}
 			
 			writer->WriteEndElement();
@@ -165,7 +171,9 @@ namespace Smart { namespace SqlClr { namespace Types {
 		int itemCount = reader->ReadInt32();
 		if (itemCount) {
 			for (int i = 0; i < itemCount; ++i) {
-				m_items->Add(reader->ReadString(), i);
+				String^ name = reader->ReadString();
+				m_names->Add(name);
+				m_items->Add(name, i);
 				m_types->Add(Internal::SqlObject::Create(reader->ReadString()));
 			}
 		}
@@ -193,9 +201,10 @@ namespace Smart { namespace SqlClr { namespace Types {
 	void Tuple::writeHeader(IO::BinaryWriter^ writer) {
 		writer->Write(m_items->Count);
 
-		for each(SqlTupleItemEntry item in m_items) {
-			writer->Write(item.Key);
-			writer->Write(m_types[item.Value]->SqlType);
+		for (int i = 0; i < m_names->Count; ++i) {
+			String^ item = m_names[i];
+			writer->Write(item);
+			writer->Write(m_types[i]->SqlType);
 		}
 	}
 
@@ -293,6 +302,27 @@ namespace Smart { namespace SqlClr { namespace Types {
 			WriteXml(writer, true);
 			writer->Flush();
 
+			return builder->ToString();
+		}
+
+		return nullptr;
+	}
+
+	String^ Tuple::ToSimpleString() {
+		if (!IsNull) {
+			Text::StringBuilder^ builder = gcnew Text::StringBuilder("( ");
+			bool start = true;
+
+			for (int i = 0; i < m_names->Count; ++i) {
+				String^ name = m_names[i];
+				builder->Append(!start ? ", " : String::Empty);
+				if (!isNull(i)) {
+					builder->Append(m_types[i]->ConvertToString(m_values[i]));
+				}
+				start = false;
+			}
+
+			builder->Append(" )");
 			return builder->ToString();
 		}
 

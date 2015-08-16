@@ -22,6 +22,7 @@ namespace Smart { namespace SqlClr { namespace Types {
 		enumerator->m_position = 0;
 		
 		if (enumerator->Count.Value > 0) {
+			enumerator->m_hasNext = 1;
 			enumerator->m_sqlEnumerator->MoveNext();
 			++enumerator->m_position;
 		}

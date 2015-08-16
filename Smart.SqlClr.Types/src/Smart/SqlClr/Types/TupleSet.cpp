@@ -141,7 +141,7 @@ namespace Smart { namespace SqlClr { namespace Types {
 		if (count) {
 			m_tuples = gcnew SqlTuplesImpl(count);
 			for (int i = 0; i < count; ++i) {
-				m_tuples->Add(Tuple::Create(m_items, m_types, reader));
+				m_tuples->Add(Tuple::Create(m_names, m_items, m_types, reader));
 			}
 		} else {
 			m_tuples = gcnew SqlTuplesImpl;
@@ -434,7 +434,7 @@ namespace Smart { namespace SqlClr { namespace Types {
 
 
 		while(reader->IsStartElement("Tuple")) {
-			tupleSet->m_tuples->Add(Tuple::Create(tupleSet->m_items, tupleSet->m_types, reader));
+			tupleSet->m_tuples->Add(Tuple::Create(tupleSet->m_names, tupleSet->m_items, tupleSet->m_types, reader));
 		}
 
 		return tupleSet;
@@ -502,7 +502,7 @@ namespace Smart { namespace SqlClr { namespace Types {
 			count = reader->ReadInt32();
 			if (!m_isColumnarCompressed) {
 				for (int i = 0; i < count; ++i) {
-					m_tuples->Add(Tuple::Create(m_items, m_types, reader));
+					m_tuples->Add(Tuple::Create(m_names, m_items, m_types, reader));
 				}
 			} else {
 				for (int i = 0; i < m_items->Count; ++i) {
@@ -510,7 +510,7 @@ namespace Smart { namespace SqlClr { namespace Types {
 						if (i != 0) {
 							m_tuples[j]->readBody(reader, i);
 						} else {
-							Tuple^ tuple = Tuple::Create(m_items, m_types);
+							Tuple^ tuple = Tuple::Create(m_names, m_items, m_types);
 							tuple->readBody(reader, i);
 
 							m_tuples->Add(tuple);

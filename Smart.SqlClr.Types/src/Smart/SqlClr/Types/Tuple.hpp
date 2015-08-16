@@ -36,15 +36,17 @@ namespace Types {
 		typedef Collections::IList SqlTupleValues;
 		typedef System::Int64 SqlTupleNulls;
 		typedef Collections::Generic::IDictionary<String^, int> SqlTupleItems;
+		typedef Collections::Generic::IList<String^> SqlTupleNames;
 		typedef Collections::Generic::KeyValuePair<String^, int> SqlTupleItemEntry;
 		typedef Collections::Generic::IList<Internal::SqlObject^> SqlTupleTypes;
 
 		typedef Collections::Generic::Dictionary<String^, int> SqlTupleItemsImpl;
+		typedef Collections::Generic::List<String^> SqlTupleNamesImpl;
 		typedef Collections::Generic::List<Internal::SqlObject^> SqlTupleTypesImpl;
 
-		static Tuple^ Create(SqlTupleItems^ items, SqlTupleTypes^ types, IO::BinaryReader^ reader);
-		static Tuple^ Create(SqlTupleItems^ items, SqlTupleTypes^ types, Xml::XmlReader^ reader);
-		static Tuple^ Create(SqlTupleItems^ items, SqlTupleTypes^ types);
+		static Tuple^ Create(SqlTupleNames^ names, SqlTupleItems^ items, SqlTupleTypes^ types, IO::BinaryReader^ reader);
+		static Tuple^ Create(SqlTupleNames^ names, SqlTupleItems^ items, SqlTupleTypes^ types, Xml::XmlReader^ reader);
+		static Tuple^ Create(SqlTupleNames^ names, SqlTupleItems^ items, SqlTupleTypes^ types);
 		static Tuple^ Create();
 
 		Tuple^ Copy();
@@ -78,10 +80,11 @@ namespace Types {
 		typedef System::Int64 SqlTupleNullsImpl;
 
 		// Internal Implementation
-		SqlTupleValues^ m_values;
-		SqlTupleNulls m_nulls;
+		SqlTupleNames^ m_names;
 		SqlTupleItems^ m_items;
 		SqlTupleTypes^ m_types;
+		SqlTupleValues^ m_values;
+		SqlTupleNulls m_nulls;
 		Byte m_isNull;
 
 		// Factory method(s)
@@ -152,6 +155,15 @@ namespace Types {
 
 		/// Converts the current instance to a string representation; necessary for SqlClr types
 		virtual String^ ToString() override;
+
+		/**
+		* Outputs the contents of the list as a simple string
+		*
+		* @returns An easy to read string
+		*
+		*/
+		[SqlMethod(IsDeterministic = true, DataAccess = DataAccessKind::None)]
+		String^ ToSimpleString();
 
 		/**
 		 * Parses a string value to create an instance of the type

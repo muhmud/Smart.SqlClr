@@ -124,9 +124,10 @@ namespace Smart { namespace SqlClr { namespace Types {
 	}
 
 	void Dictionary::readHeader(IO::BinaryReader^ reader) {
-		m_keyType = Internal::SqlObject::Create(reader->ReadString());
-
+		String^ keyType = reader->ReadString();
 		String^ valueType = reader->ReadString();
+
+		m_keyType = Internal::SqlObject::Create(keyType);
 		m_valueType = !String::IsNullOrEmpty(valueType) ? Internal::SqlObject::Create(valueType) : nullptr;
 
 		m_isCompressed = reader->ReadByte();
@@ -152,12 +153,17 @@ namespace Smart { namespace SqlClr { namespace Types {
 				} else {
 					Object^ key = m_keyType->Read(reader);
 
-					Dictionary^ dictionary = gcnew Dictionary;
-					dictionary->readHeader(reader);
-					dictionary->SetCompression(false);
-					dictionary->readBody(reader);
-
-					m_sqlDictionary->Add(key, dictionary);
+					Dictionary^ dictionary = nullptr;
+					Byte isNull = reader->ReadByte();
+					if (!isNull) {
+						dictionary = gcnew Dictionary;
+						dictionary->readHeader(reader);
+						dictionary->SetCompression(false);
+						dictionary->readBody(reader);
+						m_sqlDictionary->Add(key, dictionary);
+					} else {
+						m_sqlDictionary->Add(key, nullptr);
+					}
 				}
 			}
 		} else {
@@ -248,6 +254,8 @@ namespace Smart { namespace SqlClr { namespace Types {
 	void Dictionary::AddEntry(Object^ key, Object^ value) {
 		if (!IsNull) {
 			checkTypes(key, value);
+			key = Internal::SqlObject::Clean(key);
+			value = Internal::SqlObject::Clean(value);
 
 			if (m_sqlDictionary->Contains(key)) {
 				throw gcnew SmartSqlClrException(String::Format("Dictionary already contains an entry for key '{0}'", key));
@@ -260,6 +268,7 @@ namespace Smart { namespace SqlClr { namespace Types {
 	void Dictionary::AddNestedEntry(Object^ key, Dictionary^ value) {
 		if (!IsNull) {
 			checkNestedTypes(key);
+			key = Internal::SqlObject::Clean(key);
 
 			if (m_sqlDictionary->Contains(key)) {
 				throw gcnew SmartSqlClrException(String::Format("Dictionary already contains an entry for key '{0}'", key));
@@ -272,6 +281,8 @@ namespace Smart { namespace SqlClr { namespace Types {
 	void Dictionary::AddEntryIfNotExists(Object^ key, Object^ value) {
 		if (!IsNull) {
 			checkTypes(key, value);
+			key = Internal::SqlObject::Clean(key);
+			value = Internal::SqlObject::Clean(value);
 
 			if (!m_sqlDictionary->Contains(key)) {
 				m_sqlDictionary->Add(key, value);
@@ -282,6 +293,7 @@ namespace Smart { namespace SqlClr { namespace Types {
 	void Dictionary::AddNestedEntryIfNotExists(Object^ key, Dictionary^ value) {
 		if (!IsNull) {
 			checkNestedTypes(key);
+			key = Internal::SqlObject::Clean(key);
 
 			if (!m_sqlDictionary->Contains(key)) {
 				m_sqlDictionary->Add(key, value);
@@ -292,6 +304,8 @@ namespace Smart { namespace SqlClr { namespace Types {
 	void Dictionary::UpdateEntry(Object^ key, Object^ newValue) {
 		if (!IsNull) {
 			checkTypes(key, newValue);
+			key = Internal::SqlObject::Clean(key);
+			newValue = Internal::SqlObject::Clean(newValue);
 
 			if (!m_sqlDictionary->Contains(key)) {
 				throw gcnew SmartSqlClrException(String::Format("Dictionary does not contain an entry for key '{0}'", key));
@@ -304,6 +318,7 @@ namespace Smart { namespace SqlClr { namespace Types {
 	void Dictionary::UpdateNestedEntry(Object^ key, Dictionary^ newValue) {
 		if (!IsNull) {
 			checkNestedTypes(key);
+			key = Internal::SqlObject::Clean(key);
 
 			if (!m_sqlDictionary->Contains(key)) {
 				throw gcnew SmartSqlClrException(String::Format("Dictionary does not contain an entry for key '{0}'", key));
@@ -316,6 +331,8 @@ namespace Smart { namespace SqlClr { namespace Types {
 	void Dictionary::UpdateEntryIfExists(Object^ key, Object^ newValue) {
 		if (!IsNull) {
 			checkTypes(key, newValue);
+			key = Internal::SqlObject::Clean(key);
+			newValue = Internal::SqlObject::Clean(newValue);
 
 			if (m_sqlDictionary->Contains(key)) {
 				m_sqlDictionary[key] = newValue;
@@ -326,6 +343,7 @@ namespace Smart { namespace SqlClr { namespace Types {
 	void Dictionary::UpdateNestedEntryIfExists(Object^ key, Dictionary^ newValue) {
 		if (!IsNull) {
 			checkNestedTypes(key);
+			key = Internal::SqlObject::Clean(key);
 
 			if (m_sqlDictionary->Contains(key)) {
 				m_sqlDictionary[key] = newValue;
@@ -336,6 +354,8 @@ namespace Smart { namespace SqlClr { namespace Types {
 	void Dictionary::MergeEntry(Object^ key, Object^ value) {
 		if (!IsNull) {
 			checkTypes(key, value);
+			key = Internal::SqlObject::Clean(key);
+			value = Internal::SqlObject::Clean(value);
 
 			if (!m_sqlDictionary->Contains(key)) {
 				m_sqlDictionary->Add(key, value);
@@ -348,6 +368,7 @@ namespace Smart { namespace SqlClr { namespace Types {
 	void Dictionary::MergeNestedEntry(Object^ key, Dictionary^ value) {
 		if (!IsNull) {
 			checkNestedTypes(key);
+			key = Internal::SqlObject::Clean(key);
 
 			if (!m_sqlDictionary->Contains(key)) {
 				m_sqlDictionary->Add(key, value);
@@ -360,6 +381,7 @@ namespace Smart { namespace SqlClr { namespace Types {
 	void Dictionary::RemoveEntry(Object^ key) {
 		if (!IsNull) {
 			checkTypes(key, nullptr);
+			key = Internal::SqlObject::Clean(key);
 
 			if (!m_sqlDictionary->Contains(key)) {
 				throw gcnew SmartSqlClrException(String::Format("Dictionary does not contain an entry for key '{0}'", key));
@@ -372,6 +394,7 @@ namespace Smart { namespace SqlClr { namespace Types {
 	void Dictionary::RemoveEntryIfExists(Object^ key) {
 		if (!IsNull) {
 			checkTypes(key, nullptr);
+			key = Internal::SqlObject::Clean(key);
 
 			if (m_sqlDictionary->Contains(key)) {
 				m_sqlDictionary->Remove(key);
@@ -382,6 +405,7 @@ namespace Smart { namespace SqlClr { namespace Types {
 	SqlBoolean Dictionary::ContainsKey(Object^ key) {
 		if (!IsNull) {
 			checkTypes(key, nullptr);
+			key = Internal::SqlObject::Clean(key);
 
 			return SqlBoolean(m_sqlDictionary->Contains(key));
 		}
@@ -488,6 +512,7 @@ namespace Smart { namespace SqlClr { namespace Types {
 	Object^ Dictionary::Get(Object^ key) {
 		if (!IsNull) {
 			checkTypes(key, nullptr);
+			key = Internal::SqlObject::Clean(key);
 
 			if (!m_sqlDictionary->Contains(key)) {
 				throw gcnew SmartSqlClrException(String::Format("Dictionary does not contain an entry for key '{0}'", key));
@@ -502,6 +527,7 @@ namespace Smart { namespace SqlClr { namespace Types {
 	Object^ Dictionary::GetIfExists(Object^ key) {
 		if (!IsNull) {
 			checkTypes(key, nullptr);
+			key = Internal::SqlObject::Clean(key);
 
 			if (m_sqlDictionary->Contains(key)) {
 				return m_sqlDictionary[key];
@@ -514,6 +540,7 @@ namespace Smart { namespace SqlClr { namespace Types {
 	Dictionary^ Dictionary::GetDictionary(Object^ key) {
 		if (!IsNull) {
 			checkNestedTypes(key);
+			key = Internal::SqlObject::Clean(key);
 
 			if (!m_sqlDictionary->Contains(key)) {
 				throw gcnew SmartSqlClrException(String::Format("Dictionary does not contain an entry for key '{0}'", key));
@@ -528,6 +555,7 @@ namespace Smart { namespace SqlClr { namespace Types {
 	Dictionary^ Dictionary::GetDictionaryIfExists(Object^ key) {
 		if (!IsNull) {
 			checkNestedTypes(key);
+			key = Internal::SqlObject::Clean(key);
 
 			if (m_sqlDictionary->Contains(key)) {
 				return safe_cast<Dictionary^>(m_sqlDictionary[key]);
@@ -630,7 +658,7 @@ namespace Smart { namespace SqlClr { namespace Types {
 				if (!IsNested.Value) {
 					builder->Append(m_valueType->ConvertToString(entry.Value));
 				} else {
-					builder->Append(entry.Value->ToString());
+					builder->Append(safe_cast<Dictionary^>(entry.Value)->ToSimpleString());
 				}
 
 				start = false;
@@ -692,7 +720,11 @@ namespace Smart { namespace SqlClr { namespace Types {
 		writer->Write(m_isNull);
 		if (!m_isNull) {
 			writer->Write(m_keyType->SqlType);
-			writer->Write(m_valueType->SqlType);
+			if (m_valueType) {
+				writer->Write(m_valueType->SqlType);
+			} else {
+				writer->Write(System::String::Empty);
+			}
 			writer->Write(m_isCompressed);
 			writer->Write(m_isSorted);
 

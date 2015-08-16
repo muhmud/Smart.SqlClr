@@ -791,4 +791,13 @@ namespace Smart { namespace SqlClr { namespace Internal {
 
 		return Create(SqlTypeStringIndex[sqlDataType]);
 	}
+
+	Object^ SqlObject::Clean(Object^ value) {
+		if (value) {
+			if (value->GetType() == System::Data::SqlTypes::SqlString::typeid) {
+				return value->ToString();
+			}
+		}
+		return value;
+	}
 }}}
