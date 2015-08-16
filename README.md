@@ -104,3 +104,108 @@ set @map.AddEntry(1, 'hello');
 set @map.AddEntry(2, 'world');
 select @map.ToSimpleString();
 ```
+
+#### Dictionary of Data
+```
+select types.DictionaryCreator(k, v).ToSimpleString()
+from (
+	values (1, 2), (3, 4), (5, 6)
+) t (k, v);
+```
+
+#### Compressed Dictionary
+```
+select types.DictionaryCreatorZ(object_id, name)
+from sys.objects;
+```
+
+#### Nested Dictionary
+```
+declare @map types.Dictionary = types.Dictionary::NewNestedOf('string');
+declare @nestedMap types.Dictionary = types.Dictionary::NewOf('string', 'int');
+set @nestedMap.AddEntry('world', 2);
+set @map.AddNestedEntry('hello', @nestedMap);
+select @map.ToSimpleString()
+```
+
+#### Sorted Dictionary
+```
+declare @map types.Dictionary = types.Dictionary::NewSortedOf('int', 'string');
+set @map.AddEntry(1, 'hello');
+set @map.AddEntry(10, '!');
+set @map.AddEntry(2, 'world');
+select @map.ToSimpleString();
+
+-- Nested & Sorted
+declare @map types.Dictionary = types.Dictionary::NewSortedAndNestedOf('string');
+declare @nestedMap types.Dictionary = types.Dictionary::NewOf('int', 'datetime');
+set @nestedMap.AddEntry(3, getdate());
+set @map.AddNestedEntry('world', @nestedMap);
+set @map.AddNestedEntry('hello', @nestedMap);
+select @map.ToSimpleString()
+```
+
+#### Dictionary Operations
+```
+declare @map types.Dictionary = types.Dictionary::NewOf('string', 'float');
+set @map.AddEntry('abc', cast(5.4 as float));
+set @map.AddEntry('def', cast(3.4 as float));
+set @map.AddEntry('ghi', cast(7.6 as float));
+
+set @map.AddEntryIfNotExists('ghi', cast(9.9 as float)); -- Add if not exists
+set @map.UpdateEntry('def', cast(9.9 as float)); -- Update an entry
+set @map.MergeEntry('jkl', cast(19.19 as float)); -- Add or else update
+set @map.RemoveEntry('abc'); -- Remove an entry
+
+declare @map2 types.Dictionary = types.Dictionary::NewOf('string', 'float');
+set @map2.AddEntry('mno', cast(8.9 as float));
+
+-- Add all entries from a second map, skipping duplicate keys
+-- Also, AddFromDictionary() (fails on duplicates),
+-- UpdateDictionary(), RemoveDictionary() and MergeDictionary()
+set @map.AddDictionary(@map2);
+
+select @map.ToSimpleString(), -- Simple representation of the map
+	   @map.ContainsKey('def'), -- Check for a key
+	   @map.Get('ghi'), -- Get a key (use GetDictionary() for a nested Dictionary)
+	   @map.GetIfExists('lll'); -- Get a key if it exists
+
+select @map.Keys.ToSimpleString(), -- The Keys in the Dictionary
+	   @map.[Values].ToSimpleString(), -- The Values in the Dictionary
+	   @map.KeyType, -- The type of the keys
+	   @map.ValueType, -- The type of the values
+	   @map.Count, -- Number of entries in the Dictionary
+	   @map.IsCompressed, -- Whether or not the Dictionary is compressed
+	   @map.IsSorted, -- Whether or not the Dictionary is sorted
+	   @map.IsNested -- Whether or not the Dictionary is nested
+```
+
+### Enumerator
+
+#### Iterate over List
+```
+declare @list types.List = types.List::NewOf('uniqueidentifier');
+set @list.AddItem(newid());
+set @list.AddItem(newid());
+set @list.AddItem(newid());
+declare @enumerator types.Enumerator = @list.Items;
+while (@enumerator.HasNext = 1)
+begin
+	select @enumerator.CurrentItem;
+	set @enumerator.MoveNext();
+end
+```
+
+#### Iterate over Dictionary
+```
+declare @map types.Dictionary = types.Dictionary::NewOf('string', 'float');
+set @map.AddEntry('abc', cast(5.4 as float));
+set @map.AddEntry('def', cast(3.4 as float));
+set @map.AddEntry('ghi', cast(7.6 as float));
+declare @enumerator types.Enumerator = @map.Keys; -- @map.Values is allow Enumerable
+while (@enumerator.HasNext = 1)
+begin
+	select @enumerator.CurrentItem, @map.Get(@enumerator.CurrentItem);
+	set @enumerator.MoveNext();
+end
+```
