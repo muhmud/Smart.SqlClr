@@ -66,10 +66,11 @@ namespace Smart { namespace SqlClr { namespace Types {
 		do {
 			Internal::SqlObject^ type = nullptr;
 			if (!includeMetadata) {
-				type = m_types[counter++];
+				type = m_types[counter];
 			} else {
-				m_names->Add(reader->Name);
-				m_items->Add(reader->Name, counter++);
+				String^ name = reader->Name;
+				m_names->Add(name);
+				m_items->Add(name, counter);
 
 				String^ typeString = reader->GetAttribute(XML_TYPE_ATTRIBUTE);
 				type = Internal::SqlObject::Create(typeString ? typeString : "string");
@@ -78,14 +79,22 @@ namespace Smart { namespace SqlClr { namespace Types {
 
 			String^ isNullString = reader->GetAttribute(XML_ISNULL_ATTRIBUTE);
 			bool isNullValue = isNullString ? Convert::ToBoolean(isNullString) : false;
+			bool isEmpty = reader->IsEmptyElement;
 
-			if (!isNullValue) {
-				m_values->Add(type->Parse(reader->ReadString()));
+			if (isNullValue || isEmpty) {
+				setNull(counter, true);
+				m_values->Add(1);
 			} else {
-				setNull(counter, isNullValue);
+				m_values->Add(type->Parse(reader->ReadString()));
 			}
 
-			reader->ReadEndElement();
+			if (!isEmpty) {
+				reader->ReadEndElement();
+			} else {
+				reader->Read();
+				reader->MoveToContent();
+			}
+			counter++;
 		} while (reader->IsStartElement());
 
 		reader->ReadEndElement();
@@ -165,6 +174,7 @@ namespace Smart { namespace SqlClr { namespace Types {
 	}
 
 	void Tuple::readHeader(IO::BinaryReader^ reader) {
+		m_names = gcnew SqlTupleNamesImpl;
 		m_items = gcnew SqlTupleItemsImpl;
 		m_types = gcnew SqlTupleTypesImpl;
 
@@ -191,7 +201,11 @@ namespace Smart { namespace SqlClr { namespace Types {
 
 		if (column.IsNull) {
 			for (int i = 0; i < m_items->Count; ++i) {
-				m_values->Add(m_types[i]->Read(reader));
+				if (!isNull(i)) {
+					m_values->Add(m_types[i]->Read(reader));
+				} else {
+					m_values->Add(1);
+				}
 			}
 		} else {
 			m_values->Add(m_types[column.Value]->Read(reader));
@@ -220,7 +234,9 @@ namespace Smart { namespace SqlClr { namespace Types {
 
 		if (column.IsNull) {
 			for (int i = 0; i < m_items->Count; ++i) {
-				m_types[i]->Write(m_values[i], writer);
+				if (!isNull(i)) {
+					m_types[i]->Write(m_values[i], writer);
+				}
 			}
 		} else {
 			m_types[column.Value]->Write(m_values[column.Value], writer);
@@ -316,6 +332,8 @@ namespace Smart { namespace SqlClr { namespace Types {
 			for (int i = 0; i < m_names->Count; ++i) {
 				String^ name = m_names[i];
 				builder->Append(!start ? ", " : String::Empty);
+				builder->Append(name);
+				builder->Append(" = ");
 				if (!isNull(i)) {
 					builder->Append(m_types[i]->ConvertToString(m_values[i]));
 				}
