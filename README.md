@@ -209,3 +209,16 @@ begin
 	set @enumerator.MoveNext();
 end
 ```
+
+### Tuple
+
+#### Tuple Creation
+```
+declare @tuple types.Tuple = types.Tuple::Parse(
+	'<Tuple>
+		<Name>Peter</Name>
+		<Age type="int">40</Age>
+		<Height isNull="true"/>
+	</Tuple>');
+select @tuple.ToSimpleString();
+```
